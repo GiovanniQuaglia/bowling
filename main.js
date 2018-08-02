@@ -7,12 +7,15 @@ ball.addEventListener('click', function () {
   let hitPins = Math.floor(Math.random() * 11)
   if (scoresCollection.length < 20) {
     if (scoresCollection.length % 2 === 0) {
+      pins.innerHTML = hitPins
       scoresCollection.push(hitPins)
     }
     else if (scoresCollection.length % 2 !== 0) {
       let lastScore = scoresCollection[scoresCollection.length - 1]
       let remainingPins = 11 - lastScore
-      scoresCollection.push(Math.floor(Math.random() * remainingPins))
+      let hitRemainingPins = Math.floor(Math.random() * remainingPins)
+      scoresCollection.push(hitRemainingPins)
+      pins.innerHTML = hitRemainingPins
       updateScore()
     }
   }
@@ -27,5 +30,5 @@ function updateScore () {
     }
     return score
   }, 0)
-  console.log(total)
+  !isNaN(total) ? score.innerHTML = `Score: ${total}` : score.innerHTML = "Well done, roll again!"
 }
