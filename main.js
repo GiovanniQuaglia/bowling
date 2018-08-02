@@ -2,6 +2,7 @@ const pins = document.getElementById('number')
 const score = document.getElementById('score')
 const ball = document.getElementById('ball')
 let scoresCollection = []
+let total = 0
 
 ball.addEventListener('click', function () {
   let hitPins = Math.floor(Math.random() * 11)
@@ -19,10 +20,11 @@ ball.addEventListener('click', function () {
       updateScore()
     }
   }
+  else endGame()
 })
 
 function updateScore () {
-  let total = scoresCollection.reduce((score, value, i, arr) => {
+  total = scoresCollection.reduce((score, value, i, arr) => {
     if (i % 2 === 0) {
       if (i > 17 && value + arr[i + 1] === 10 || value === 10) {return score + 10}
       if (value === 10) { return score + (value + arr[i + 2] + arr[i + 3]) }
@@ -32,4 +34,16 @@ function updateScore () {
     return score
   }, 0)
   !isNaN(total) ? score.innerHTML = `Score: ${total}` : score.innerHTML = "Well done, roll again!"
+}
+
+function endGame() {
+  if (total < 70) {
+  score.innerHTML = `Your final score is ${total}. Well, at least you tried...`
+  }
+  if (total >= 70 && total <= 99) {
+    score.innerHTML = `Your final score is ${total}, bravo!`
+  }
+  if (total > 99) {
+    score.innerHTML = `You are so talented, your final score is ${total}!!`
+  }
 }
