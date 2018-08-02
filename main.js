@@ -24,6 +24,7 @@ ball.addEventListener('click', function () {
 function updateScore () {
   let total = scoresCollection.reduce((score, value, i, arr) => {
     if (i % 2 === 0) {
+      if (i > 17 && value + arr[i + 1] === 10 || value === 10) {return score + 10}
       if (value === 10) { return score + (value + arr[i + 2] + arr[i + 3]) }
       if (value + arr[i + 1] === 10) { return score + (value + arr[i + 1] + arr[i + 2]) }
       return score + (value + arr[i + 1])
