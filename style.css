@@ -41,6 +41,11 @@ a:hover {
   font-weight: 900;
 }
 
+#numberTop {
+  color: #fff;
+  font-weight: 900;
+}
+
 #number {
   font-weight: 800;
   font-size: 127px;
