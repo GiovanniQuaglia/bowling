@@ -1,49 +1,78 @@
 const pins = document.getElementById('number')
 const score = document.getElementById('score')
 const ball = document.getElementById('ball')
-let scoresCollection = []
-let total = 0
 
-ball.addEventListener('click', function () {
-  let hitPins = Math.floor(Math.random() * 11)
-  if (scoresCollection.length < 20) {
-    if (scoresCollection.length % 2 === 0) {
-      pins.innerHTML = hitPins
-      scoresCollection.push(hitPins)
-    }
-    else if (scoresCollection.length % 2 !== 0) {
-      let lastScore = scoresCollection[scoresCollection.length - 1]
-      let remainingPins = 11 - lastScore
-      let hitRemainingPins = Math.floor(Math.random() * remainingPins)
-      scoresCollection.push(hitRemainingPins)
-      pins.innerHTML = hitRemainingPins
-      updateScore()
-    }
+const state = {
+  scoresCollection: [],
+  total: 0
+}
+
+const onBallRoll = () => {
+  let rangeOfPins = 11
+  let hitPins = Math.floor(Math.random() * rangeOfPins)
+  let lastScore = state.scoresCollection[state.scoresCollection.length - 1]
+  let remainingPins = rangeOfPins - lastScore
+  let hitRemainingPins = Math.floor(Math.random() * remainingPins)
+  const framesLimit = 20
+  if (state.scoresCollection.length < framesLimit) {
+    checkFrame(hitPins, hitRemainingPins)
   }
-  else endGame()
-})
+  else displayFinalScore()
+}
+
+const checkFrame = (hitPins, hitRemainingPins) => {
+  if (state.scoresCollection.length % 2 === 0) {
+    pushScoreToState(hitPins)
+    updateDisplayedHitPins(document.getElementById('number'), hitPins)
+  }
+  else if (state.scoresCollection.length % 2 !== 0) {
+    pushScoreToState(hitRemainingPins)
+    updateDisplayedHitPins(document.getElementById('number'), hitRemainingPins)
+    updateScore()
+  }
+}
+
+const updateDisplayedHitPins = function (target, pinsToBeDisplayed) {
+  target.innerHTML = pinsToBeDisplayed
+};
+
+const pushScoreToState = function (pinsToBePushed) {
+  state.scoresCollection.push(pinsToBePushed)
+}
 
 function updateScore () {
-  total = scoresCollection.reduce((score, value, i, arr) => {
+  state.total = state.scoresCollection.reduce((score, value, i, arr) => {
+    let strike = value === 10
+    let spare = value + arr[i + 1] === 10
     if (i % 2 === 0) {
-      if (i > 17 && value + arr[i + 1] === 10 || value === 10) {return score + 10}
-      if (value === 10) { return score + (value + arr[i + 2] + arr[i + 3]) }
-      if (value + arr[i + 1] === 10) { return score + (value + arr[i + 1] + arr[i + 2]) }
+      if (i > 17 && spare || strike) {
+        return score + 10
+      }
+      if (strike) {
+        return score + (value + arr[i + 2] + arr[i + 3])
+      }
+      if (spare) {
+        return score + (value + arr[i + 1] + arr[i + 2])
+      }
       return score + (value + arr[i + 1])
     }
     return score
   }, 0)
-  !isNaN(total) ? score.innerHTML = `Score: ${total}` : score.innerHTML = "Well done, roll again!"
+  score.innerHTML = isNaN(state.total) ? "Well done, roll again!" : `Score: ${state.total}`
 }
 
-function endGame() {
-  if (total < 70) {
-  score.innerHTML = `Your final score is ${total}. Well, at least you tried...`
+const displayFinalScore = () => {
+  if (state.total < 70) {
+  score.innerHTML = `Your final score is ${state.total}. Well, at least you tried...`
   }
-  if (total >= 70 && total <= 99) {
-    score.innerHTML = `Your final score is ${total}, bravo!`
+  if (state.total >= 70 && state.total <= 99) {
+    score.innerHTML = `Your final score is ${state.total}, bravo!`
   }
-  if (total > 99) {
-    score.innerHTML = `You are so talented, your final score is ${total}!!`
+  if (state.total > 99) {
+    score.innerHTML = `You are very talented, your final score is ${state.total}!`
   }
 }
+
+document.addEventListener("DOMContentLoaded", function(event) {
+  ball.addEventListener('click', onBallRoll)
+});
