@@ -7,7 +7,7 @@ const state = {
   total: 0
 }
 
-const onBallRoll = () => {
+const rollTheBall = () => {
   let rangeOfPins = 11
   let hitPins = Math.floor(Math.random() * rangeOfPins)
   let lastScore = state.scoresCollection[state.scoresCollection.length - 1]
@@ -17,18 +17,18 @@ const onBallRoll = () => {
   if (state.scoresCollection.length < framesLimit) {
     checkFrame(hitPins, hitRemainingPins)
   }
-  else displayFinalScore()
+  else displayFinalScore(score, state.total)
 }
 
 const checkFrame = (hitPins, hitRemainingPins) => {
   if (state.scoresCollection.length % 2 === 0) {
-    pushScoreToState(hitPins)
-    updateDisplayedHitPins(document.getElementById('number'), hitPins)
+    pushScoreToState(state.scoresCollection, hitPins)
+    updateDisplayedHitPins(pins, hitPins)
   }
   else if (state.scoresCollection.length % 2 !== 0) {
-    pushScoreToState(hitRemainingPins)
-    updateDisplayedHitPins(document.getElementById('number'), hitRemainingPins)
-    updateScore()
+    pushScoreToState(state.scoresCollection, hitRemainingPins)
+    updateDisplayedHitPins(pins, hitRemainingPins)
+    updateScore(score, state.scoresCollection)
   }
 }
 
@@ -36,12 +36,12 @@ const updateDisplayedHitPins = function (target, pinsToBeDisplayed) {
   target.innerHTML = pinsToBeDisplayed
 };
 
-const pushScoreToState = function (pinsToBePushed) {
-  state.scoresCollection.push(pinsToBePushed)
+const pushScoreToState = function (target, pinsToBePushed) {
+  target.push(pinsToBePushed)
 }
 
-function updateScore () {
-  state.total = state.scoresCollection.reduce((score, value, i, arr) => {
+function updateScore (target, scoresCollection) {
+  state.total = scoresCollection.reduce((score, value, i, arr) => {
     let strike = value === 10
     let spare = value + arr[i + 1] === 10
     if (i % 2 === 0) {
@@ -58,21 +58,23 @@ function updateScore () {
     }
     return score
   }, 0)
-  score.innerHTML = isNaN(state.total) ? "Well done, roll again!" : `Score: ${state.total}`
+  target.innerHTML = isNaN(state.total) ? "Well done, roll again!" : `Score: ${state.total}`
 }
 
-const displayFinalScore = () => {
-  if (state.total < 70) {
-  score.innerHTML = `Your final score is ${state.total}. Well, at least you tried...`
+const displayFinalScore = (target, totalScore) => {
+  if (totalScore < 70) {
+    target.innerHTML = `Your final score is ${totalScore}. Well, at least you tried...`
   }
-  if (state.total >= 70 && state.total <= 99) {
-    score.innerHTML = `Your final score is ${state.total}, bravo!`
+  if (totalScore >= 70 && totalScore <= 99) {
+    target.innerHTML = `Your final score is ${totalScore}, bravo!`
   }
-  if (state.total > 99) {
-    score.innerHTML = `You are very talented, your final score is ${state.total}!`
+  if (totalScore > 99) {
+    target.innerHTML = `You are very talented, your final score is ${totalScore}!`
   }
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  ball.addEventListener('click', onBallRoll)
+  ball.addEventListener('click', rollTheBall)
 });
+
+module.exports = {updateDisplayedHitPins, displayFinalScore, pushScoreToState, updateScore};
